@@ -215,4 +215,70 @@ app.post("/articles/:id", function(req, res) {
   });
 });
 
-}
+// Route to see notes we have added
+app.get("/notes", function(req, res) {
+  // Find all notes in the note collection with our Note model
+  Note.find({}, function(error, doc) {
+    // Send any errors to the browser
+    if (error) {
+      res.send(error);
+    }
+    // Or send the doc to the browser
+    else {
+      res.send(doc);
+    }
+  });
+});
+
+// New note creation via POST route
+app.post("/submitNote", function(req, res) {
+  // Use our Note model to make a new note from the req.body
+  var newNote = new Note(req.body);
+  // Save the new note to mongoose
+  newNote.save(function(error, doc) {
+    // Send any errors to the browser
+    if (error) {
+      res.send(error);
+    }
+    // Otherwise
+    else {
+      // Find our user and push the new note id into the User's notes array
+      Article.findOneAndUpdate({}, { $push: { "notes": doc._id } }, { new: true }, function(err, newdoc) {
+        // Send any errors to the browser
+        if (err) {
+          res.send(err);
+        }
+        // Or send the newdoc to the browser
+        else {
+          //res.send(newdoc);
+          console.log(newdoc);
+        }
+      });
+    }
+  });
+});
+
+// Route to see what user looks like WITH populating
+app.get("/populateduser", function(req, res) {
+  // Prepare a query to find all users..
+  Article.find({})
+    // ..and on top of that, populate the notes (replace the objectIds in the notes array with bona-fide notes)
+    .populate("notes")
+    // Now, execute the query
+    .exec(function(error, doc) {
+      // Send any errors to the browser
+      if (error) {
+        res.send(error);
+      }
+      // Or send the doc to the browser
+      else {
+        //res.send(doc);
+        console.log(doc);
+      }
+    });
+});
+
+
+
+
+}//end exports

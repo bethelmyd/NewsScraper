@@ -15,7 +15,7 @@
     article.link = aTag.attr("href").trim();
     $.post("/save", article, function(data, status){
       if(status == "success")
-        alert("Saved" + data);
+        alert("Saved " + data);
       else
         alert("error writing to database");
     });
