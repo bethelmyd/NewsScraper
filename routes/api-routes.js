@@ -3,12 +3,18 @@
 var express = require("express");
 var mongoose = require("mongoose");
 // Our scraping tools
-var request = require("request");
 var cheerio = require("cheerio");
 
+// Mongoose mpromise deprecated - use bluebird promises
+var Promise = require("bluebird");
+
+mongoose.Promise = Promise;
+var request = Promise.promisify(require("request"));
+Promise.promisifyAll(request);
+
 // Requiring our Note and Article models
-var Note = require("../models/Note.js");
-var Article = require("../models/Article.js");
+var Note = require("../models/note.js");
+var Article = require("../models/article.js");
 
 // Routes
 // ======
@@ -60,8 +66,9 @@ app.get("/", function(req, res) {
 
 app.get("/scrape", function(req, res) {
     var articleId = 0;
+    
   // First, we grab the body of the html with request
-   request("http://www.nytimes.com/", function(error, response, html) {
+  var hbsObject = request("https://www.nytimes.com/", function(error, response, html) {
 
 //     // Then, we load that into cheerio and save it to $ for a shorthand selector
      var $ = cheerio.load(html);
@@ -83,10 +90,11 @@ app.get("/scrape", function(req, res) {
         var hbsObject = {
             articles: results
         };
+        //hbsObject.articles = results;
         //console.log(hbsObject);
         console.log("inside scrape");  //this prints but AFTERWARDS I see the GET on the console
         res.render("index", hbsObject);
-   });  //end request
+    });  //end request
 
 
    }); //end app.get
@@ -158,42 +166,53 @@ app.get("/articles", function(req, res) {
 // This will grab an article by it's ObjectId
 app.get("/articles/:id", function(req, res) {
 
-   // Finish the route so it finds one article using the req.params.id,
-
-  // and run the populate method with "note",
-
-  // then responds with the article with the note included
-  Article.find({_id: req.params.id})
-    // Send any errors to the browser
-    .populate("note")
-    // Now, execute that query
-    .exec(function(error, doc) {
-      // Send any errors to the browser
-      if (error) {
-        res.send(error);
-      }
-      // Or, send our results to the browser, which will now include the notes
-      else {
-        res.send(doc);
-      }
-    });
+ // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+  Article.findOne({ "articleId": req.params.id })
+  // ..and populate all of the notes associated with it
+  .populate("note")
+  // now, execute our query
+  .exec(function(error, doc) {
+    // Log any errors
+    if (error) {
+      console.log(error);
+    }
+    // Otherwise, send the doc to the browser as a json object
+    else {
+      res.json(doc);
+    }
+  });
 
 });
 
 // Create a new note or replace an existing note
 app.post("/articles/:id", function(req, res) {
 
+  // Create a new note and pass the req.body to the entry
+  var newNote = new Note(req.body);
 
-  // TODO
-  // ====
-
-  // save the new note that gets posted to the Notes collection
-
-  // then find an article from the req.params.id
-
-  // and update it's "note" property with the _id of the new note
-
-
+  // And save the new note the db
+  newNote.save(function(error, doc) {
+    // Log any errors
+    if (error) {
+      console.log(error);
+    }
+    // Otherwise
+    else {
+      // Use the article id to find and update it's note
+      Article.findOneAndUpdate({ "articleId": req.params.id }, { "note": doc._id })
+      // Execute the above query
+      .exec(function(err, doc) {
+        // Log any errors
+        if (err) {
+          console.log(err);
+        }
+        else {
+          // Or send the document to the browser
+          res.send(doc);
+        }
+      });
+    }
+  });
 });
 
 }
