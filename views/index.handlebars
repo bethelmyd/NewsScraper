@@ -1,21 +1,22 @@
 
-  <div id="wrapper">
+  <div class = "row text-center">
     <h1>News Scraper</h1>
     <h2><i>Get it while it's hot!</i></h2>
+    <button id = "scrape" class="btn btn-normal">Click to get news article headlines</button>
+  </div>
     {{!--<div id="articles"></div>
     <div id="notes"></div>--}}
-<div class = "row">
-  <div class="col-md-12">
-     <h3>News Scraper</h3>
-    <ul class="list-group">
-        {{#each articles}}
-             <li class="list-group-item">
-              <p class="burgerName">{{this.title}}</p>
-              <p class="burgerName">{{this.link}}</p>
-            </li>
-        {{/each}}
-      </ul>
+    <div class = "row">
+      <div class="col-md-12">
+        <ul class="list-group">
+            {{#each articles}}
+                <li class="list-group-item">
+                  <p class=""><a id = "{{articleId}}" href="{{this.link}}">{{this.title}}</a> <button class="btn btn-normal saver">Save article</button></p>
+                </li>
+            {{/each}}
+          </ul>
+        </div>
     </div>
-</div>
     
-  </div>
+
+    <script src="/js/app.js"></script>
