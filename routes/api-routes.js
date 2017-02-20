@@ -100,7 +100,7 @@ app.get("/scrape", function(req, res) {
    }); //end app.get
    
 
-app.post("/save", function(req, res) {
+app.post("/saveArticle", function(req, res) {
 
     Article.find({articleId: req.body.articleId}, function(error, results){
         if(error)
@@ -163,13 +163,13 @@ app.get("/articles", function(req, res) {
 
 });
 
-// This will grab an article by it's ObjectId
+// This will grab an article by it's article id
 app.get("/articles/:id", function(req, res) {
 
  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
   Article.findOne({ "articleId": req.params.id })
   // ..and populate all of the notes associated with it
-  .populate("note")
+  .populate("notes")
   // now, execute our query
   .exec(function(error, doc) {
     // Log any errors
@@ -185,7 +185,7 @@ app.get("/articles/:id", function(req, res) {
 });
 
 // Create a new note or replace an existing note
-app.post("/articles/:id", function(req, res) {
+app.post("/createNote/:id", function(req, res) {
 
   // Create a new note and pass the req.body to the entry
   var newNote = new Note(req.body);
@@ -216,17 +216,25 @@ app.post("/articles/:id", function(req, res) {
   });
 });
 
-// Route to see notes we have added
-app.get("/notes", function(req, res) {
-  // Find all notes in the note collection with our Note model
-  Note.find({}, function(error, doc) {
-    // Send any errors to the browser
+// Route to see notes we have added for a given article
+app.get("/seeNotes/:id", function(req, res) {
+// Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+  Article.findOne({ "articleId": req.params.id })
+  // ..and populate all of the notes associated with it
+  .populate("notes")
+  // now, execute our query
+  .exec(function(error, doc) {
+    // Log any errors
     if (error) {
-      res.send(error);
+      console.log(error);
     }
-    // Or send the doc to the browser
+    // Otherwise, send the doc to the browser as a json object
     else {
-      res.send(doc);
+    console.log(doc);
+    if(doc == null)
+        res.json([]);
+    else
+        res.json(doc.notes);      
     }
   });
 });

@@ -18,8 +18,8 @@
                       <button class="btn btn-info saveArticle" id="saveArticle-{{articleId}}">Save article</button> 
                       <span id = "noteBtnArea-{{articleId}}" class="noteBtnArea"> 
                       <button type="button" class="btn btn-info btn-sm addNote" id="addNote-{{articleId}}" data-toggle="modal" data-target="#addNoteModal">Add Note</button>
-                      <button type="button" class="btn btn-info  btn-sm" id="seeNotes-{{articleId}}"  data-toggle="modal" data-target="#seeNotesModal">See Notes</button>
-                      <button type="button" class="btn btn-danger btn-sm" id ="removeNotes-{{articleId}}">Remove Notes</button>
+                      <button type="button" class="btn btn-info  btn-sm seeNotes" id="seeNotes-{{articleId}}"  data-toggle="modal" data-target="#seeNotesModal">See Notes</button>
+                      {{!--<button type="button" class="btn btn-danger btn-sm removeNotes" id ="removeNotes-{{articleId}}">Remove Notes</button>--}}
                       </span>
                     </p>                 
                   </div>
@@ -43,7 +43,7 @@
         <p>Some text in the modal.</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default closeBtn" data-dismiss="modal">Close</button>
       </div>
     </div>
 
@@ -65,7 +65,7 @@
       </div>
       <div class="modal-footer">
         <button id = "saveNote" type="button" class="btn btn-info btn-sm saveNote" data="">Save Note</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default closeBtn" data-dismiss="modal">Close</button>
       </div>
     </div>
 

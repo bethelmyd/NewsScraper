@@ -13,12 +13,12 @@
     article.articleId = aTag.attr("id").trim();
     article.title = aTag.html().trim();
     article.link = aTag.attr("href").trim();
-    $.post("/save", article, function(data, status){
+    $.post("/saveArticle", article, function(data, status){
       if(status == "success")
       {
         alert("Saved " + data);
-        $("#saveArticle-"+article.articleId).css("display", "none");
-        $("#noteBtnArea-"+article.articleId).css("display", "inline");       
+        // $("#saveArticle-"+article.articleId).css("display", "none");
+        // $("#noteBtnArea-"+article.articleId).css("display", "inline");       
       }
       else
       {
@@ -53,8 +53,9 @@
         "title" : title,
         "body" : body
     };
-    $.post("/articles/"+articleId, data, function(data, status){
-      alert(JSON.stringify(data));
+
+    $.post("/createNote/"+articleId, data, function(data, status){
+      //alert(JSON.stringify(data));
 
       $("#noteTitle").val("");
       $("#noteArea").val("");
@@ -63,7 +64,43 @@
 
   });
 
+$(document).on("click", ".seeNotes", function(){
+    var thisId = $(this).attr("id");
+    var articleId = thisId.substring(thisId.indexOf("-")+1);
+    var notesBody = $("#seeNotesBody");
+    notesBody.attr("data", articleId);  //may not use this
+    $.get("/seeNotes/"+articleId, function(data, status){
+      //alert(data);
+      var notesBody = $("#seeNotesBody");
+      notesBody.html("");
+      if(data == null || data.length == 0)
+      {
+        notesBody.html("<p>No notes are available for this article.</p>");
+        return;
+      }
+      var html = "";
+      for(var i = 0; i < data.length; i++)
+      {
+        html += "<div class=\"panel panel-default\">";
+        html += "<p class=\"panel-heading text-center\">" + data[i].title + "</p>";
+        html += "<p class=\"panel-body\">" + data[i].body + "</p>";
+        html += "</div>";        
+      }
+      notesBody.append(html);
+    });
 
+});
+
+$(document).on("click", ".closeBtn", function(){
+      $("#noteTitle").val("");
+      $("#noteArea").val("");  
+});
+
+
+$(document).on("click", ".deleteNote", function(){
+    var articleId = $(this).attr("data");
+    //$.get("/notes")
+});
 
 
 //});
