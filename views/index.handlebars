@@ -1,8 +1,10 @@
 
-  <div class = "row text-center">
-    <h1>News Scraper</h1>
-    <h2><i>Get it while it's hot!</i></h2>
-    <button id = "scrape" class="btn btn-normal">Click to get news article headlines</button>
+  <div id="header" class = "row text-center">
+    <div class="col-md-12">
+      <h1>NY Times News Scraper</h1>
+      <h2><i>Get it while it's hot!</i></h2>
+      <button id = "scrape" class="btn btn-info btn-lg">Click to get news article headlines</button>
+    </div>
   </div>
     {{!--<div id="articles"></div>
     <div id="notes"></div>--}}
@@ -11,11 +13,16 @@
         <ul class="list-group">
             {{#each articles}}
                 <li class="list-group-item">
-                  <p class = "" ><a id = "{{articleId}}" href="{{this.link}}">{{this.title}}</span></a> <button class="btn btn-info saver">Save article</button>  
-                    <button type="button" class="btn btn-info btn-sm" id="addNote">Add Note</button>
-                    <button type="button" class="btn btn-info  btn-sm" data-toggle="modal" data-target="#seeNotes">See Notes</button>
-                    <button type="button" class="btn btn-danger btn-sm" id ="removeNotes">Remove Notes</button>                 
-                  </p>
+                  <div class = "" ><a id = "{{articleId}}" href="{{this.link}}">{{this.title}}</a> 
+                    <p>
+                      <button class="btn btn-info saveArticle" id="saveArticle-{{articleId}}">Save article</button> 
+                      <span id = "noteBtnArea-{{articleId}}" class="noteBtnArea"> 
+                      <button type="button" class="btn btn-info btn-sm addNote" id="addNote-{{articleId}}" data-toggle="modal" data-target="#addNoteModal">Add Note</button>
+                      <button type="button" class="btn btn-info  btn-sm" id="seeNotes-{{articleId}}"  data-toggle="modal" data-target="#seeNotesModal">See Notes</button>
+                      <button type="button" class="btn btn-danger btn-sm" id ="removeNotes-{{articleId}}">Remove Notes</button>
+                      </span>
+                    </p>                 
+                  </div>
                 </li>
             {{/each}}
           </ul>
@@ -23,19 +30,41 @@
     </div>
 
 <!-- Modal -->
-<div id="seeNotes" class="modal fade" role="dialog">
+<div id="seeNotesModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Modal Header</h4>
+        <h4 class="modal-title">View Notes</h4>
       </div>
-      <div id = "modal-body" class="modal-body">
+      <div id = "seeNotesBody" class="modal-body">
         <p>Some text in the modal.</p>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="addNoteModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add a Note</h4>
+      </div>
+      <div id = "addNoteBody" class="modal-body">
+        <label>Title</label><br /><input id = "noteTitle" type = "text" placeholder = "Enter a title for the note"></input>
+        <label>Text</label><br /><textarea id="noteArea" name="textarea" placeholder = "Text goes here"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button id = "saveNote" type="button" class="btn btn-info btn-sm saveNote" data="">Save Note</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>

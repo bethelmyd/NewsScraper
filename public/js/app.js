@@ -6,21 +6,66 @@
     $.get("/scrape");
   });
 
-  $(document).on("click", ".saver", function(){
+  $(document).on("click", ".saveArticle", function(){
     //alert("clicked");
-    var aTag = $(this).parent().children("a");
+    var aTag = $(this).parent().parent().children("a");
     var article = {};
     article.articleId = aTag.attr("id").trim();
     article.title = aTag.html().trim();
     article.link = aTag.attr("href").trim();
     $.post("/save", article, function(data, status){
       if(status == "success")
+      {
         alert("Saved " + data);
+        $("#saveArticle-"+article.articleId).css("display", "none");
+        $("#noteBtnArea-"+article.articleId).css("display", "inline");       
+      }
       else
+      {
         alert("error writing to database");
+      }
+        
     });
   });
-  
+
+  $(document).on("click", ".addNote", function(){
+    var thisId = $(this).attr("id");
+    var articleId = thisId.substring(thisId.indexOf("-")+1);
+    $("#saveNote").attr("data", articleId);
+  });
+
+  $(document).on("click", "#saveNote", function(){
+    //alert("clicked");
+    var title = $("#noteTitle").val().trim();
+    var body = $("#noteArea").val().trim();
+    if(title == "")
+    {
+      alert("Please enter a title");
+      return;
+    }
+    if(body == "")
+    {
+      alert("Please enter a note");
+      return;
+    }
+    var articleId = $(this).attr("data");
+    var data = {
+        "title" : title,
+        "body" : body
+    };
+    $.post("/articles/"+articleId, data, function(data, status){
+      alert(JSON.stringify(data));
+
+      $("#noteTitle").val("");
+      $("#noteArea").val("");
+      $("#addNoteModal").modal("hide");
+    });
+
+  });
+
+
+
+
 //});
 
 // // Grab the articles as a json
