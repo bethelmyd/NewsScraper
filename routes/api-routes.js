@@ -93,6 +93,7 @@ app.get("/scrape", function(req, res) {
         //hbsObject.articles = results;
         //console.log(hbsObject);
         console.log("inside scrape");  //this prints but AFTERWARDS I see the GET on the console
+
         res.render("index", hbsObject);
     });  //end request
 
@@ -257,7 +258,7 @@ app.post("/deleteNote/:id", function(req, res){
             if(note == null)
                 res.json(null);
             else{
-                console.log(note);
+//                var objectId = mongoose.Types.ObjectId(note._id);
                 Article.update({"articleId": note.articleId}, {$pullAll: {"notes": [note._id]}});
                 note.remove();
                 res.json(note);

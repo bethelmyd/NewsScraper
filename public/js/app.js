@@ -3,7 +3,7 @@
 //$.ready(function(){
   $(document).on("click", "#scrape", function(){
     //alert("clicked");
-    $.get("/scrape");
+     window.location.replace("/scrape");
   });
 
   $(document).on("click", ".saveArticle", function(){
