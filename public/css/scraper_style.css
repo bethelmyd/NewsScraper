@@ -34,6 +34,12 @@ textarea {
   font-family: "Times New Roman", serif;
 }
 
+.articleArea{
+  font-family: "Times New Roman", serif;
+  font-size: 1.5em; 
+  background-color: #33F5CA;
+}
+
 /*.noteBtnArea{
   display: none;
 }*/

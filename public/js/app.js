@@ -8,9 +8,11 @@
 
   $(document).on("click", ".saveArticle", function(){
     //alert("clicked");
-    var aTag = $(this).parent().parent().children("a");
+    var thisBtnId = $(this).attr("id");
+    var aTagId = thisBtnId.substring(thisBtnId.indexOf("-")+1);
+    var aTag = $("#"+aTagId);
     var article = {};
-    article.articleId = aTag.attr("id").trim();
+    article.articleId = aTagId;
     article.title = aTag.html().trim();
     article.link = aTag.attr("href").trim();
     $.post("/saveArticle", article, function(data, status){
@@ -50,11 +52,12 @@
     }
     var articleId = $(this).attr("data");
     var data = {
+        "articleId": parseInt(articleId),
         "title" : title,
         "body" : body
     };
 
-    $.post("/createNote/"+articleId, data, function(data, status){
+    $.post("/createNote/", data, function(data, status){
       //alert(JSON.stringify(data));
 
       $("#noteTitle").val("");
@@ -84,6 +87,7 @@ $(document).on("click", ".seeNotes", function(){
         html += "<div class=\"panel panel-default\">";
         html += "<p class=\"panel-heading text-center\">" + data[i].title + "</p>";
         html += "<p class=\"panel-body\">" + data[i].body + "</p>";
+        html += "<p class=\"panel-footer\"><button class=\"btn btn-danger btn-sm deleteNote\" id = \""+ data[i]._id +"\">Delete Note</button></p>";
         html += "</div>";        
       }
       notesBody.append(html);
@@ -98,8 +102,16 @@ $(document).on("click", ".closeBtn", function(){
 
 
 $(document).on("click", ".deleteNote", function(){
-    var articleId = $(this).attr("data");
-    //$.get("/notes")
+    var thisBtn = $(this);
+    var noteId = thisBtn.attr("id");
+    $.post("/deleteNote/"+noteId, function(data, status){
+      console.log(data);
+        if(data != null)
+        {
+          thisBtn.parent().parent().remove();
+        }
+    });
+
 });
 
 
