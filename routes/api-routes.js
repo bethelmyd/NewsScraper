@@ -259,7 +259,10 @@ app.post("/deleteNote/:id", function(req, res){
                 res.json(null);
             else{
 //                var objectId = mongoose.Types.ObjectId(note._id);
-                Article.update({"articleId": note.articleId}, {$pullAll: {"notes": [note._id]}});
+                console.log(note._id);
+                // Article.where({"articleId": note.articleId}).update({$pullAll: {"notes": [mongoose.mongo.ObjectId(note._id + "")]}});
+                Article.where({"articleId": note.articleId}).update({$pull: {"notes": [mongoose.mongo.ObjectId(note._id)]}});
+
                 note.remove();
                 res.json(note);
             }
