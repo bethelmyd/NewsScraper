@@ -18,7 +18,7 @@
     $.post("/saveArticle", article, function(data, status){
       if(status == "success")
       {
-        alert("Saved " + data);
+        //alert("Saved " + data);
         // $("#saveArticle-"+article.articleId).css("display", "none");
         // $("#noteBtnArea-"+article.articleId).css("display", "inline");       
       }
@@ -58,8 +58,8 @@
     };
 
     $.post("/createNote/", data, function(data, status){
-      //alert(JSON.stringify(data));
-
+      if(data==null)
+        alert("Please save article first.");
       $("#noteTitle").val("");
       $("#noteArea").val("");
       $("#addNoteModal").modal("hide");

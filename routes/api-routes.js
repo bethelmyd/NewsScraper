@@ -107,7 +107,7 @@ app.post("/saveArticle", function(req, res) {
         if(error)
         {
             console.log(error);
-            res.send(error);
+            res.send({});
         }
         else{
             //see if anything was found
@@ -132,6 +132,10 @@ app.post("/saveArticle", function(req, res) {
                         res.send(doc);          
                     }
                 }); //end save
+            }
+            else
+            {
+                res.send(results);
             }
         }
     });  //end find
@@ -175,7 +179,7 @@ app.get("/articles/:id", function(req, res) {
   .exec(function(error, doc) {
     // Log any errors
     if (error) {
-      console.log(error);
+      throw error;
     }
     // Otherwise, send the doc to the browser as a json object
     else {
@@ -187,39 +191,48 @@ app.get("/articles/:id", function(req, res) {
 
 // Create a new note or replace an existing note
 app.post("/createNote", function(req, res) {
-
-  // Create a new note and pass the req.body to the entry
-  var note = {
-      articleId: parseInt(req.body.articleId),
-      title: req.body.title,
-      body: req.body.body
-  }
-  var newNote = new Note(note);
-
-  // And save the new note the db
-  newNote.save(function(error, doc) {
-    // Log any errors
-    if (error) {
-      console.log(error);
-    }
-    // Otherwise
-    else {
-        var articleId = note.articleId;
-      // Use the article id to find and update it's note
-      Article.findOneAndUpdate({ "articleId":  articleId}, { $push: { "notes": doc._id } }, { new: true })
-      // Execute the above query
-      .exec(function(err, doc) {
-        // Log any errors
-        if (err) {
-          console.log(err);
+  var articleId = parseInt(req.body.articleId);
+  Article.findOne({articleId: articleId}, function(err, article){
+      if(err) throw err;
+      if(article)
+      {
+        var note = {
+            articleId: articleId,
+            title: req.body.title,
+            body: req.body.body
         }
-        else {
-          // Or send the document to the browser
-          res.send(doc);
-        }
-      });
-    }
+        var newNote = new Note(note);
+
+        // And save the new note the db
+        newNote.save(function(error, doc) {
+            // Log any errors
+            if (error) {
+                throw error;
+            }
+            // Otherwise
+            else {
+                var articleId = note.articleId;
+            // Use the article id to find and update it's note
+            Article.findOneAndUpdate({ "articleId":  articleId}, { $push: { "notes": doc._id } }, { new: true })
+            // Execute the above query
+            .exec(function(err, doc) {
+                // Log any errors
+                if (err) {
+                    throw err;
+                }
+                else {
+                // Or send the document to the browser
+                res.send(doc);
+                }
+            });
+            }
+        });
+      }
+      else{
+          res.send(null);  //article wasn't saved
+      }
   });
+  // Create a new note and pass the req.body to the entry
 });
 
 // Route to see notes we have added for a given article
@@ -258,12 +271,8 @@ app.post("/deleteNote/:id", function(req, res){
             if(note == null)
                 res.json(null);
             else{
-//                var objectId = mongoose.Types.ObjectId(note._id);
-                // console.log(typeof (mongoose.mongo.ObjectId(note._id).toString()));
-                // var noteId = mongoose.mongo.ObjectId(note._id).toString();
                 console.log(noteId);
-                Article.where({"articleId": note.articleId}).update({$pullAll: {"notes": [note._id]}}).exec();
-                // Article.where({"articleId": note.articleId}).update({$pull: {"notes": []}});
+                Article.where({"articleId": note.articleId}).update({$pullAll: {"notes": [note._id]}}).exec();  //YOU NEED THE exec
 
                 note.remove();
                 res.json(note);
