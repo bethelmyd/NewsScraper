@@ -7,10 +7,10 @@ var Schema = mongoose.Schema;
 
 // Create article schema
 var ArticleSchema = new Schema({
-  articleId: {
-    type: Number,
-    required: true
-  },
+  // articleId: {
+  //   type: Number,
+  //   required: true
+  // },
   // title is a required string
   title: {
     type: String,

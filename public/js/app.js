@@ -22,15 +22,14 @@
         if(jQuery.isEmptyObject(data) || (typeof(data.articleId) === "undefined"))
           alert("Article already saved");
         else
-          alert("Article " + data.articleId + " saved.");
+          alert("Article " + data.title + " saved.");
+
         $("#saveArticle-"+article.articleId).prop("disabled", true);
-        // $("#noteBtnArea-"+article.articleId).css("display", "inline");       
       }
       else
       {
         alert("error writing to database");
       }
-        
     });
   });
 
@@ -55,8 +54,12 @@
       return;
     }
     var articleId = $(this).attr("data");
+    var aTag = $("#"+articleId);   ////INSERTED
+    var articleTitle = aTag.text().trim();   ////INSERTED
+
     var data = {
-        "articleId": parseInt(articleId),
+//        "articleId": parseInt(articleId),  ////CHANGED to below
+        "articleTitle": articleTitle,
         "title" : title,
         "body" : body
     };
@@ -75,9 +78,12 @@
 $(document).on("click", ".seeNotes", function(){
     var thisId = $(this).attr("id");
     var articleId = thisId.substring(thisId.indexOf("-")+1);
+    var aTag = $("#"+articleId);  ////INSERTED
+    var title = aTag.text().trim();  ////INSERTED
     var notesBody = $("#seeNotesBody");
     notesBody.attr("data", articleId);  //may not use this
-    $.get("/seeNotes/"+articleId, function(data, status){
+    // $.get("/seeNotes/"+articleId, function(data, status){   ////CHANGED to one below
+    $.get("/seeNotes/"+title, function(data, status){
       //alert(data);
       var notesBody = $("#seeNotesBody");
       notesBody.html("");

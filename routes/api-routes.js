@@ -41,6 +41,7 @@ app.get("/scrape", function(req, res) {
        var result = {};
 
 //       // Add the text and href of every link, and save them as properties of the result object
+
         result.articleId = ++articleId;
         result.title = $(this).children("a").text();
         result.link = $(this).children("a").attr("href");
@@ -64,7 +65,8 @@ app.get("/scrape", function(req, res) {
 
 app.post("/saveArticle", function(req, res) {
 
-    Article.find({articleId: req.body.articleId}, function(error, results){
+//    Article.find({articleId: req.body.articleId}, function(error, results){   /////CHANGED to one below
+    Article.find({title: req.body.title}, function(error, results){
         if(error)
         {
             console.log(error);
@@ -75,7 +77,7 @@ app.post("/saveArticle", function(req, res) {
             if(results.length == 0)  //record wasn't there so save
             {
                 var result = {};
-                result.articleId = req.body.articleId;
+//                result.articleId = req.body.articleId;  ///// CHANGED
                 result.title = req.body.title;
                 result.link = req.body.link;
             //       // Using our Article model, create a new entry
@@ -129,36 +131,16 @@ app.get("/articles", function(req, res) {
 
 });
 
-// This will grab an article by it's article id
-app.get("/articles/:id", function(req, res) {
-
- // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-  Article.findOne({ "articleId": req.params.id })
-  // ..and populate all of the notes associated with it
-  .populate("notes")
-  // now, execute our query
-  .exec(function(error, doc) {
-    // Log any errors
-    if (error) {
-      throw error;
-    }
-    // Otherwise, send the doc to the browser as a json object
-    else {
-      res.json(doc);
-    }
-  });
-
-});
-
 // Create a new note or replace an existing note
 app.post("/createNote", function(req, res) {
-  var articleId = parseInt(req.body.articleId);
-  Article.findOne({articleId: articleId}, function(err, article){
+//  var articleId = parseInt(req.body.articleId);  ////COMMENTED OUT
+//   Article.findOne({articleId: articleId}, function(err, article){  ////CHANGED to one below
+  Article.findOne({title: req.body.articleTitle}, function(err, article){
       if(err) throw err;
       if(article)
       {
         var note = {
-            articleId: articleId,
+//            articleId: articleId,  ////COMMENTED out
             title: req.body.title,
             body: req.body.body
         }
@@ -172,9 +154,11 @@ app.post("/createNote", function(req, res) {
             }
             // Otherwise
             else {
-                var articleId = note.articleId;
+                // var articleId = note.articleId;   ////COMMENTED out
+            var articleTitle = req.body.articleTitle;
             // Use the article id to find and update it's note
-            Article.findOneAndUpdate({ "articleId":  articleId}, { $push: { "notes": doc._id } }, { new: true })
+            // Article.findOneAndUpdate({ "articleId":  articleId}, { $push: { "notes": doc._id } }, { new: true })  ////CHANGED to one below
+            Article.findOneAndUpdate({ "title":  articleTitle}, { $push: { "notes": doc._id } }, { new: true })            
             // Execute the above query
             .exec(function(err, doc) {
                 // Log any errors
@@ -197,9 +181,11 @@ app.post("/createNote", function(req, res) {
 });
 
 // Route to see notes we have added for a given article
-app.get("/seeNotes/:id", function(req, res) {
+//app.get("/seeNotes/:id", function(req, res) {  ////CHANGED to one below
+app.get("/seeNotes/:title", function(req, res) {
 // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-  Article.findOne({ "articleId": req.params.id })
+//   Article.findOne({ "articleId": req.params.id })   ////CHANGED to one below
+  Article.findOne({ "title": req.params.title })
   // ..and populate all of the notes associated with it
   .populate("notes")
   // now, execute our query
@@ -245,7 +231,26 @@ app.post("/deleteNote/:id", function(req, res){
  });
 
 
+// // This will grab an article by it's article id
+// app.get("/articles/:id", function(req, res) {
 
+//  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+// //  Article.findOne({ "articleId": req.params.id })   ////CHANGED to one below
+//   Article.findOne({ "_id": req.params.id })  // ..and populate all of the notes associated with it
+//   .populate("notes")
+//   // now, execute our query
+//   .exec(function(error, doc) {
+//     // Log any errors
+//     if (error) {
+//       throw error;
+//     }
+//     // Otherwise, send the doc to the browser as a json object
+//     else {
+//       res.json(doc);
+//     }
+//   });
+
+// });
 
 
 }//end exports
